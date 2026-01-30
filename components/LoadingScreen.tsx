@@ -38,7 +38,20 @@ export default function LoadingScreen({ onComplete }: { onComplete?: () => void 
     <div className="fixed inset-0 z-[9999] bg-black flex flex-col items-center justify-center overflow-hidden">
       {!isStarted ? (
         <button 
-          onClick={() => setIsStarted(true)}
+          onClick={() => {
+            // Prime the audio context immediately on user click
+            if (typeof window !== 'undefined') {
+              // 1. Prime SpeechSynthesis
+              const utterance = new SpeechSynthesisUtterance("");
+              window.speechSynthesis.speak(utterance);
+              
+              // 2. Prime Audio element
+              const audio = new Audio();
+              audio.src = "data:audio/wav;base64,UklGRigAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQQAAAAAAA==";
+              audio.play().catch(() => {});
+            }
+            setIsStarted(true);
+          }}
           className="group relative px-12 py-4 bg-transparent border-2 border-cyan-500 font-mono text-xl tracking-widest transition-all duration-300 shadow-[0_0_20px_rgba(6,182,212,0.3)] hover:shadow-[0_0_40px_rgba(6,182,212,0.6)] card-3d overflow-hidden"
         >
           <div className="card-3d-inner relative z-10 text-cyan-500 group-hover:text-black transition-colors duration-300">

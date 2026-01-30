@@ -121,7 +121,11 @@ export default function AIVoiceInterface({ onContinue }: { onContinue: () => voi
   useEffect(() => {
     const greet = () => {
       if (hasGreetedRef.current) return
-      if (window.speechSynthesis.paused) window.speechSynthesis.resume()
+      
+      // Ensure we resume synthesis context if it was suspended
+      if (window.speechSynthesis && window.speechSynthesis.paused) {
+        window.speechSynthesis.resume()
+      }
 
       const hour = new Date().getHours()
       let timeGreeting = "Good evening"
@@ -129,16 +133,19 @@ export default function AIVoiceInterface({ onContinue }: { onContinue: () => voi
       else if (hour >= 12 && hour < 17) timeGreeting = "Good afternoon"
 
       const text = ` ${timeGreeting}.  I am Harsh Dayal's virtual Portfolio Assistant. How may I help you today? You can ask about his skills, projects, or simply type Enter Portfolio to proceed. `
-      speak(text)
+      
+      // Small delay to ensure the component is fully mounted and ready
+      setTimeout(() => {
+        speak(text)
+      }, 500)
+      
       hasGreetedRef.current = true
     }
 
-    window.speechSynthesis.onvoiceschanged = greet
-    const speechTimeout = setTimeout(greet, 1000)
+    // Try to greet immediately as the voice interface appears
+    greet()
 
     return () => {
-      clearTimeout(speechTimeout)
-      window.speechSynthesis.onvoiceschanged = null
       window.speechSynthesis.cancel()
       if (audioRef.current) {
         audioRef.current.pause()
