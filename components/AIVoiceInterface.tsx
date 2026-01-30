@@ -22,7 +22,6 @@ export default function AIVoiceInterface({ onContinue }: { onContinue: () => voi
     setAiResponse(text)
 
     try {
-      console.log('Attempting Deepgram TTS...');
       // 2. Try Deepgram via our API route
       const response = await fetch('/api/tts', {
         method: 'POST',
@@ -31,22 +30,16 @@ export default function AIVoiceInterface({ onContinue }: { onContinue: () => voi
       })
 
       if (response.ok) {
-        console.log('Deepgram success!');
         const blob = await response.blob()
         const url = URL.createObjectURL(blob)
         const audio = new Audio(url)
         audioRef.current = audio
         audio.play()
         return
-      } else {
-        const errorData = await response.json();
-        console.warn('Deepgram API returned an error:', errorData);
       }
     } catch (error) {
-      console.error('Deepgram failed, falling back to native TTS:', error)
+      // Silent fallback to native TTS
     }
-
-    console.log('Falling back to native browser TTS...');
 
     // 3. Fallback: Native Browser TTS (Old logic)
     const utterance = new SpeechSynthesisUtterance(text)

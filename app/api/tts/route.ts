@@ -6,12 +6,10 @@ export async function POST(req: Request) {
     const DEEPGRAM_API_KEY = process.env.DEEPGRAM_API_KEY;
 
     if (!DEEPGRAM_API_KEY) {
-      console.error('ERROR: DEEPGRAM_API_KEY is missing in .env.local');
       return NextResponse.json({ error: 'API key missing' }, { status: 401 });
     }
 
-    // Using "Orion" (English Male) - Very crisp and professional for AI
-    // Other options: 'aura-helios-en' (Male), 'aura-stella-en' (Female)
+    // Using "Athena" (English Female) - Very crisp and professional for AI
     const voice = 'aura-athena-en'; 
 
     const response = await fetch(
@@ -27,8 +25,6 @@ export async function POST(req: Request) {
     );
 
     if (!response.ok) {
-      const errorText = await response.text();
-      console.error('Deepgram API Error Details:', errorText);
       throw new Error('Deepgram API error');
     }
 
